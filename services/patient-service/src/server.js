@@ -1,4 +1,5 @@
 const express = require('express');
+console.log('Starting patient-service...');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
@@ -102,3 +103,10 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+
+// Catch unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error('Unhandled Rejection', { reason });
+  process.exit(1);
+});

@@ -1,6 +1,6 @@
 {
   "name": "hms-testing",
-  "version": "1.0.0", 
+  "version": "1.0.0",
   "description": "HMS API Testing Suite",
   "main": "test-api.js",
   "scripts": {
@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "axios": "^1.4.0",
-    "csv-parse": "^5.4.0"
+    "csv-parse": "^5.4.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "jest": "^29.5.0"

@@ -45,7 +45,7 @@ const serviceTemplates = {
     "uuid": "^9.0.0",
     "moment": "^2.29.4",
     "axios": "^1.4.0",
-    "prom-client": "^14.2.0",
+    "prom-client": "^13.0.0",
     "express-prometheus-middleware": "^1.2.0"
   },
   "devDependencies": {
@@ -171,7 +171,7 @@ module.exports = app;`
     "swagger-jsdoc": "^6.2.8",
     "uuid": "^9.0.0",
     "axios": "^1.4.0",
-    "prom-client": "^14.2.0"
+    "prom-client": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",
@@ -236,7 +236,7 @@ CREATE INDEX IF NOT EXISTS idx_bill_items_bill ON bill_line_items(bill_id);`
     "swagger-jsdoc": "^6.2.8",
     "uuid": "^9.0.0",
     "axios": "^1.4.0",
-    "prom-client": "^14.2.0"
+    "prom-client": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",
@@ -291,7 +291,7 @@ CREATE INDEX IF NOT EXISTS idx_prescriptions_doctor ON prescriptions(doctor_id);
     "swagger-jsdoc": "^6.2.8",
     "uuid": "^9.0.0",
     "axios": "^1.4.0",
-    "prom-client": "^14.2.0"
+    "prom-client": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",
@@ -355,7 +355,7 @@ CREATE INDEX IF NOT EXISTS idx_refunds_payment ON refunds(payment_id);`
     "swagger-jsdoc": "^6.2.8",
     "uuid": "^9.0.0",
     "nodemailer": "^6.9.0",
-    "prom-client": "^14.2.0"
+    "prom-client": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",

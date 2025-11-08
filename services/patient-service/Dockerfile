@@ -15,6 +15,10 @@ COPY . .
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S hms -u 1001
 
+# Copy wait-for-it.sh and set permissions before switching user
+COPY wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+
 # Change ownership of the app directory
 RUN chown -R hms:nodejs /app
 USER hms
@@ -25,4 +29,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["sh", "/wait-for-it.sh", "patient-db:5432", "--timeout=30", "--", "npm", "start"]
