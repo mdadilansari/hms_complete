@@ -1,0 +1,109 @@
+# Patient Service Kubernetes Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patient-service
+  labels:
+    app: patient-service
+    service: patient
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: patient-service
+  template:
+    metadata:
+      labels:
+        app: patient-service
+        service: patient
+        tier: backend
+    spec:
+      containers:
+      - name: patient-service
+        image: hms/patient-service:latest
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: DB_HOST
+          value: "patient-db-service"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: "patient_db"
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: patient-db-secret
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: patient-db-secret
+              key: password
+        - name: SERVICE_NAME
+          value: "patient-service"
+        - name: LOG_LEVEL
+          value: "info"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: patient-service
+  labels:
+    app: patient-service
+    service: patient
+spec:
+  selector:
+    app: patient-service
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: patient-db-secret
+type: Opaque
+data:
+  username: cG9zdGdyZXM= # postgres (base64 encoded)
+  password: cG9zdGdyZXM= # postgres (base64 encoded)
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: patient-service-config
+data:
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  SERVICE_NAME: "patient-service"

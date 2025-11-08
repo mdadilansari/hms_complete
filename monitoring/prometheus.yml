@@ -1,0 +1,76 @@
+# Prometheus configuration for HMS monitoring
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Patient Service
+  - job_name: 'patient-service'
+    static_configs:
+      - targets: ['patient-service:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
+  # Doctor Service
+  - job_name: 'doctor-service'
+    static_configs:
+      - targets: ['doctor-service:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Appointment Service
+  - job_name: 'appointment-service'
+    static_configs:
+      - targets: ['appointment-service:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Billing Service
+  - job_name: 'billing-service'
+    static_configs:
+      - targets: ['billing-service:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Prescription Service
+  - job_name: 'prescription-service'
+    static_configs:
+      - targets: ['prescription-service:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Payment Service
+  - job_name: 'payment-service'
+    static_configs:
+      - targets: ['payment-service:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Notification Service
+  - job_name: 'notification-service'
+    static_configs:
+      - targets: ['notification-service:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # API Gateway
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

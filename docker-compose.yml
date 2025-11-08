@@ -1,0 +1,290 @@
+version: '3.8'
+
+services:
+  # Patient Service
+  patient-service:
+    build: ./services/patient-service
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=patient-db
+      - DB_PORT=5432
+      - DB_NAME=patient_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - SERVICE_NAME=patient-service
+      - LOG_LEVEL=info
+    depends_on:
+      - patient-db
+    networks:
+      - hms-network
+
+  patient-db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=patient_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - patient_data:/var/lib/postgresql/data
+      - ./services/patient-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hms-network
+
+  # Doctor & Scheduling Service
+  doctor-service:
+    build: ./services/doctor-service
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=doctor-db
+      - DB_PORT=5432
+      - DB_NAME=doctor_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - SERVICE_NAME=doctor-service
+      - LOG_LEVEL=info
+    depends_on:
+      - doctor-db
+    networks:
+      - hms-network
+
+  doctor-db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=doctor_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - doctor_data:/var/lib/postgresql/data
+      - ./services/doctor-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hms-network
+
+  # Appointment Service
+  appointment-service:
+    build: ./services/appointment-service
+    ports:
+      - "3003:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=appointment-db
+      - DB_PORT=5432
+      - DB_NAME=appointment_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - SERVICE_NAME=appointment-service
+      - DOCTOR_SERVICE_URL=http://doctor-service:3000
+      - PATIENT_SERVICE_URL=http://patient-service:3000
+      - BILLING_SERVICE_URL=http://billing-service:3000
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3000
+      - LOG_LEVEL=info
+    depends_on:
+      - appointment-db
+      - doctor-service
+      - patient-service
+    networks:
+      - hms-network
+
+  appointment-db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=appointment_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - appointment_data:/var/lib/postgresql/data
+      - ./services/appointment-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hms-network
+
+  # Billing Service
+  billing-service:
+    build: ./services/billing-service
+    ports:
+      - "3004:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=billing-db
+      - DB_PORT=5432
+      - DB_NAME=billing_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - SERVICE_NAME=billing-service
+      - APPOINTMENT_SERVICE_URL=http://appointment-service:3000
+      - PAYMENT_SERVICE_URL=http://payment-service:3000
+      - LOG_LEVEL=info
+    depends_on:
+      - billing-db
+    networks:
+      - hms-network
+
+  billing-db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=billing_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - billing_data:/var/lib/postgresql/data
+      - ./services/billing-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hms-network
+
+  # Prescription Service
+  prescription-service:
+    build: ./services/prescription-service
+    ports:
+      - "3005:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=prescription-db
+      - DB_PORT=5432
+      - DB_NAME=prescription_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - SERVICE_NAME=prescription-service
+      - APPOINTMENT_SERVICE_URL=http://appointment-service:3000
+      - LOG_LEVEL=info
+    depends_on:
+      - prescription-db
+    networks:
+      - hms-network
+
+  prescription-db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=prescription_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - prescription_data:/var/lib/postgresql/data
+      - ./services/prescription-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hms-network
+
+  # Payment Service
+  payment-service:
+    build: ./services/payment-service
+    ports:
+      - "3006:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=payment-db
+      - DB_PORT=5432
+      - DB_NAME=payment_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - SERVICE_NAME=payment-service
+      - BILLING_SERVICE_URL=http://billing-service:3000
+      - LOG_LEVEL=info
+    depends_on:
+      - payment-db
+    networks:
+      - hms-network
+
+  payment-db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=payment_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - payment_data:/var/lib/postgresql/data
+      - ./services/payment-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hms-network
+
+  # Notification Service
+  notification-service:
+    build: ./services/notification-service
+    ports:
+      - "3007:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=notification-db
+      - DB_PORT=5432
+      - DB_NAME=notification_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - SERVICE_NAME=notification-service
+      - LOG_LEVEL=info
+    depends_on:
+      - notification-db
+    networks:
+      - hms-network
+
+  notification-db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=notification_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - notification_data:/var/lib/postgresql/data
+      - ./services/notification-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hms-network
+
+  # API Gateway (Optional - for centralized routing)
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PATIENT_SERVICE_URL=http://patient-service:3000
+      - DOCTOR_SERVICE_URL=http://doctor-service:3000
+      - APPOINTMENT_SERVICE_URL=http://appointment-service:3000
+      - BILLING_SERVICE_URL=http://billing-service:3000
+      - PRESCRIPTION_SERVICE_URL=http://prescription-service:3000
+      - PAYMENT_SERVICE_URL=http://payment-service:3000
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3000
+      - LOG_LEVEL=info
+    depends_on:
+      - patient-service
+      - doctor-service
+      - appointment-service
+      - billing-service
+      - prescription-service
+      - payment-service
+      - notification-service
+    networks:
+      - hms-network
+
+  # Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - hms-network
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3010:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - hms-network
+
+volumes:
+  patient_data:
+  doctor_data:
+  appointment_data:
+  billing_data:
+  prescription_data:
+  payment_data:
+  notification_data:
+  grafana_data:
+
+networks:
+  hms-network:
+    driver: bridge

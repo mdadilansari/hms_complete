@@ -1,0 +1,31 @@
+{
+  "name": "prescription-service",
+  "version": "1.0.0",
+  "description": "HMS Prescription Service - Prescription management",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest",
+    "seed": "node src/seedData.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.7.0",
+    "helmet": "^6.1.5",
+    "cors": "^2.8.5",
+    "pg": "^8.11.0",
+    "joi": "^17.9.2",
+    "winston": "^3.8.2",
+    "swagger-ui-express": "^4.6.3",
+    "swagger-jsdoc": "^6.2.8",
+    "uuid": "^9.0.0",
+    "axios": "^1.4.0",
+    "prom-client": "^14.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "jest": "^29.5.0",
+    "csv-parse": "^5.4.0"
+  }
+}

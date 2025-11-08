@@ -1,0 +1,118 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Hospital Management System - Overview",
+    "tags": ["HMS", "microservices", "healthcare"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=~\".*-service\"}",
+            "legendFormat": "{{job}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Request Rate (RPS)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{job=~\".*-service\"}[5m])",
+            "legendFormat": "{{job}} - {{method}} {{route}}"
+          }
+        ],
+        "yAxes": [
+          {"label": "Requests/sec", "min": 0}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Response Time Percentiles",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_ms_bucket{job=~\".*-service\"}[5m]))",
+            "legendFormat": "p50 - {{job}}"
+          },
+          {
+            "expr": "histogram_quantile(0.90, rate(http_request_duration_ms_bucket{job=~\".*-service\"}[5m]))",
+            "legendFormat": "p90 - {{job}}"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(http_request_duration_ms_bucket{job=~\".*-service\"}[5m]))",
+            "legendFormat": "p99 - {{job}}"
+          }
+        ],
+        "yAxes": [
+          {"label": "Duration (ms)", "min": 0}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{job=~\".*-service\", status_code!~\"2..\"}[5m]) / rate(http_requests_total{job=~\".*-service\"}[5m])",
+            "legendFormat": "{{job}} error rate"
+          }
+        ],
+        "yAxes": [
+          {"label": "Error Rate", "min": 0, "max": 1}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "HMS Business Metrics",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "increase(appointments_created_total[1h])",
+            "legendFormat": "Appointments Created (1h)"
+          },
+          {
+            "expr": "increase(bills_generated_total[1h])",
+            "legendFormat": "Bills Generated (1h)"
+          },
+          {
+            "expr": "increase(payments_completed_total[1h])",
+            "legendFormat": "Payments Completed (1h)"
+          },
+          {
+            "expr": "increase(payments_failed_total[1h])",
+            "legendFormat": "Payment Failures (1h)"
+          }
+        ],
+        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 16}
+      }
+    ]
+  }
+}
